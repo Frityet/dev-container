@@ -85,7 +85,6 @@ plugins=(
 	docker-compose
 	dotenv
 	fzf
-	
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -118,6 +117,18 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+function exec-echo {
+	echo "$@" >&2
+	"$@"
+	return $?
+}
+
+function set-openssh-server-port {
+    local port=$(comm -23 <(seq 49152 65535 | sort) <(ss -Htan | awk '{print $4}' | sed 's/.*://g' | sort | uniq) | shuf | head -n 1)
+    sudo sed -i "s/#Port 22/Port ${port}/g" /etc/ssh/sshd_config && sudo systemctl restart sshd
+	return $?
+}
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
